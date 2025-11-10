@@ -1,1 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>New Academy — Audition Step 2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="black-bg">
+  <main class="form-main">
+    <header class="small-header">
+      <h1>Audition — Step 2</h1>
+      <p class="muted">Select role, upload your short video (30–60s) and submit.</p>
+    </header>
+
+    <form id="audition2-form" class="audition-form" action="https://formspree.io/f/xnnoeyng" method="POST" enctype="multipart/form-data">
+      <!-- We'll re-insert the audition1 fields into hidden inputs from localStorage -->
+      <div id="carry-fields"></div>
+
+      <label>What are you auditioning for?
+        <select name="audition_role" id="audition-role" required>
+          <option value="">Choose a role</option>
+          <option>Main Vocalist</option>
+          <option>Main Dancer</option>
+          <option>Main Rapper</option>
+          <option>Main Visualizer</option>
+          <option>All-Rounder</option>
+        </select>
+      </label>
+
+      <label>Performance Video (30–60 seconds) — MP4, MOV, or audio
+        <input type="file" name="performance_file" id="performance-file" accept="video/*,audio/*" required>
+      </label>
+
+      <label>Optional Photo
+        <input type="file" name="photo" id="photo-file" accept="image/*">
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Submit Audition</button>
+        <a href="index.html" class="btn ghost">Return Home</a>
+      </div>
+    </form>
+
+    <!-- submission result -->
+    <div id="submission-result" class="hidden result-box">
+      <h2>Audition Submitted</h2>
+      <p>Your audition has been submitted. Please wait until <strong>March 2026</strong> for results. We'll contact you via the email or phone provided.</p>
+      <a class="btn" href="index.html">Return Home</a>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
 
