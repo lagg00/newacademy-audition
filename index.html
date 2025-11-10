@@ -1,1 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>New Academy — Auditions</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="black-bg">
+  <!-- Intro / writing animation overlay -->
+  <div id="intro" class="intro">
+    <!-- PNG logo sits beneath, centered -->
+    <img id="logo-png" src="New.png" alt="New Academy logo" class="logo-png" />
+    <!-- SVG handwriting overlay (white stroke) -->
+    <svg id="logo-svg" class="logo-svg" viewBox="0 0 900 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <!-- Text path: uses a script-like font look-alike. This path will animate stroke-draw -->
+      <defs>
+        <style>
+          .hand { fill:none; stroke:#fff; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+        </style>
+      </defs>
+      <!-- You can change the <text> to better match; this will animate like writing -->
+      <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" style="font-family: 'Great Vibes', cursive; font-size:78px; fill:none; stroke:#fff; stroke-width:2.5;" class="hand">New Academy</text>
+    </svg>
+  </div>
+
+  <!-- Main homepage -->
+  <main id="main" class="main hidden">
+    <header class="site-header">
+      <h1 class="brand">New Academy</h1>
+      <p class="tag">A new beginning in faith & music</p>
+    </header>
+
+    <section class="cta">
+      <a class="btn audition-btn" id="audition-open" href="audition1.html" target="_blank" rel="noopener">Audition Here</a>
+    </section>
+
+    <section class="roles" aria-labelledby="roles-heading">
+      <h2 id="roles-heading" class="section-title">Roles & What They Do</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Main Vocalist</h3>
+          <p>Primary singer and lead vocal. Strong control, high range, emotional delivery.</p>
+          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
+        </article>
+
+        <article class="card">
+          <h3>Main Dancer</h3>
+          <p>Lead dancer who takes complex choreography and performance-focused sections.</p>
+          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
+        </article>
+
+        <article class="card">
+          <h3>Main Rapper</h3>
+          <p>Primary rapper: rhythm, flow, stage presence, and rap performance skills.</p>
+          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
+        </article>
+
+        <article class="card">
+          <h3>Main Visualizer</h3>
+          <p>Focus on visuals, camera presence, and performance aesthetic for media.</p>
+          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
+        </article>
+
+        <article class="card">
+          <h3>All-Rounder</h3>
+          <p>Versatile member who performs multiple roles — sings, dances, raps as needed.</p>
+          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>© 2025 New Academy — A solo-run project growing toward a global stage</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
 
