@@ -2,55 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>New Academy — Audition Step 2</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Academy — Video Submission</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="black-bg">
-  <main class="form-main">
-    <header class="small-header">
-      <h1>Audition — Step 2</h1>
-      <p class="muted">Select role, upload your short video (30–60s) and submit.</p>
-    </header>
+<body>
+  <header class="minimal-header">
+    <img src="logo.png" alt="New Academy logo" class="logo small" onerror="this.style.display='none'">
+    <div class="logo-note">This is not the name of the group</div>
+  </header>
 
-    <form id="audition2-form" class="audition-form" action="https://formspree.io/f/xnnoeyng" method="POST" enctype="multipart/form-data">
-      <!-- We'll re-insert the audition1 fields into hidden inputs from localStorage -->
-      <div id="carry-fields"></div>
+  <main class="container narrow">
+    <h1>Video Submission — Part 2</h1>
+    <p class="lead">Upload a 30–120 second video demonstrating your talent. Make sure your parent has submitted Part 1 first.</p>
 
-      <label>What are you auditioning for?
-        <select name="audition_role" id="audition-role" required>
-          <option value="">Choose a role</option>
-          <option>Main Vocalist</option>
-          <option>Main Dancer</option>
-          <option>Main Rapper</option>
-          <option>Main Visualizer</option>
-          <option>All-Rounder</option>
-        </select>
-      </label>
+    <form id="part2-form" class="form" novalidate>
+      <div class="form-row">
+        <label for="appId">Application ID or Child's Full Name</label>
+        <input id="appId" name="appId" type="text" placeholder="Application ID or name">
+        <div class="invalid" id="err-appId"></div>
+      </div>
 
-      <label>Performance Video (30–60 seconds) — MP4, MOV, or audio
-        <input type="file" name="performance_file" id="performance-file" accept="video/*,audio/*" required>
-      </label>
+      <div class="form-row">
+        <label for="videoFile">Video File</label>
+        <input id="videoFile" name="videoFile" type="file" accept="video/*">
+        <div class="invalid" id="err-video"></div>
+      </div>
 
-      <label>Optional Photo
-        <input type="file" name="photo" id="photo-file" accept="image/*">
-      </label>
+      <div id="video-preview" class="video-preview" hidden>
+        <p>Preview:</p>
+        <video id="preview-player" controls style="max-width:100%"></video>
+      </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn">Submit Audition</button>
-        <a href="index.html" class="btn ghost">Return Home</a>
+        <button type="submit" class="btn btn-primary">Submit Audition</button>
+        <a href="audition1.html" class="btn btn-outline">Back to Part 1</a>
       </div>
+
     </form>
 
-    <!-- submission result -->
-    <div id="submission-result" class="hidden result-box">
-      <h2>Audition Submitted</h2>
-      <p>Your audition has been submitted. Please wait until <strong>March 2026</strong> for results. We'll contact you via the email or phone provided.</p>
-      <a class="btn" href="index.html">Return Home</a>
-    </div>
+    <div id="submit-status" class="status" hidden></div>
   </main>
+
+  <footer class="site-footer">New Academy • Thank you for auditioning</footer>
 
   <script src="script.js"></script>
 </body>
 </html>
-
