@@ -1,173 +1,321 @@
-// script.js
-// Handles intro animation fade, terms flow, form age validation, localStorage carry, and submit feedback.
+// script.js - handles animation, validation, terms modal, form submit (Formspree)
 
-// ----- Intro animation: SVG stroke draw + auto-fade after 4 seconds -----
-document.addEventListener('DOMContentLoaded', () => {
-  const intro = document.getElementById('intro');
-  const main = document.getElementById('main');
-  // Wait for the svg stroke animation to finish (we used ~3.8s). Add slight buffer.
-  const introDurationMs = 4000;
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xnnoeyng'; // your endpoint
 
-  setTimeout(() => {
-    // fade out intro, reveal main
-    if (intro) {
-      intro.style.opacity = 0;
-      intro.style.visibility = 'hidden';
-    }
-    if (main) {
-      main.classList.remove('hidden');
-      // slight fade-in effect:
-      main.style.opacity = 0;
-      main.style.transition = 'opacity .6s ease';
-      requestAnimationFrame(() => main.style.opacity = 1);
-    }
-  }, introDurationMs);
+/* ---------- Intro animation ---------- */
+window.addEventListener('DOMContentLoaded', () => {
+  // Hide intro after animation
+  const overlay = document.getElementById('intro-overlay');
+  if (overlay) {
+    // Keep overlay visible for ~2s then hide smoothly
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      overlay.setAttribute('aria-hidden', 'true');
+    }, 1800);
+  }
+
+  // populate DOB selects where present
+  populateDobSelects();
+  bindRoleCards();
+  bindHeaderAudition();
+  setupForms();
 });
 
-// ----- Terms agree logic on audition1 page -----
-(function termsAndForm() {
-  const agreeCheckbox = document.getElementById('agree-checkbox');
-  const agreeBtn = document.getElementById('agree-btn');
-  const termsSection = document.getElementById('terms');
-  const form = document.getElementById('audition1-form');
+/* ---------- Helper: populate DOB selects ---------- */
+function populateDobSelects() {
+  const yearEl = document.getElementById('dob-year');
+  const monthEl = document.getElementById('dob-month');
+  const dayEl = document.getElementById('dob-day');
 
-  if (!agreeCheckbox || !agreeBtn || !termsSection) return;
+  if (!yearEl || !monthEl || !dayEl) return;
 
-  agreeCheckbox.addEventListener('change', () => {
-    if (agreeCheckbox.checked) {
-      agreeBtn.classList.remove('disabled');
-      agreeBtn.removeAttribute('disabled');
-    } else {
-      agreeBtn.classList.add('disabled');
-      agreeBtn.setAttribute('disabled', 'disabled');
-    }
+  // Compute allowed birth years based on ages 12-14 (allowing birthdays all year)
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const maxAge = 14;
+  const minAge = 12;
+
+  // For birth year range: from (currentYear - minAge) down to (currentYear - maxAge)
+  const startYear = currentYear - minAge;
+  const endYear = currentYear - maxAge;
+
+  yearEl.innerHTML = '<option value="">Year</option>';
+  for (let y = startYear; y >= endYear; y--) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    yearEl.appendChild(opt);
+  }
+
+  monthEl.innerHTML = '<option value="">Month</option>';
+  for (let m = 1; m <= 12; m++) {
+    const opt = document.createElement('option');
+    opt.value = String(m).padStart(2, '0');
+    opt.textContent = new Date(2000, m - 1).toLocaleString(undefined, { month: 'short' });
+    monthEl.appendChild(opt);
+  }
+
+  dayEl.innerHTML = '<option value="">Day</option>';
+  for (let d = 1; d <= 31; d++) {
+    const opt = document.createElement('option');
+    opt.value = String(d).padStart(2, '0');
+    opt.textContent = d;
+    dayEl.appendChild(opt);
+  }
+
+  // If month/year change, you could adjust days but simple approach is ok for demo.
+}
+
+/* ---------- Role card details ---------- */
+function bindRoleCards() {
+  const cards = document.querySelectorAll('.role-card');
+  const detail = document.getElementById('role-detail');
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const role = card.dataset.role;
+      if (!detail) return;
+      detail.hidden = false;
+      detail.innerHTML = `<strong>${role}</strong><p style="margin:8px 0 0;color:#374151">
+        ${card.querySelector('p').textContent}
+      </p><p style="margin-top:8px;color:#6b7280">Click another role to view details.</p>`;
+      window.scrollTo({ top: detail.offsetTop - 20, behavior: 'smooth' });
+    });
   });
+}
 
-  agreeBtn.addEventListener('click', () => {
-    // hide terms and show form
-    termsSection.classList.add('hidden');
-    if (form) form.classList.remove('hidden');
-    // populate birth year select
-    populateBirthYears();
+/* ---------- Header Audition button opens audition1 in new tab and shows modal there ---------- */
+function bindHeaderAudition() {
+  const btn = document.getElementById('audition-open');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    // open Part 1 in new tab
+    window.open('audition1.html', '_blank');
   });
+}
 
-  // Next button to step 2: validate and store data
-  const toStep2 = document.getElementById('to-step2');
-  if (toStep2) {
-    toStep2.addEventListener('click', () => {
-      const parentName = document.getElementById('parent-name')?.value?.trim();
-      const parentPhone = document.getElementById('parent-phone')?.value?.trim();
-      const parentEmail = document.getElementById('parent-email')?.value?.trim();
-      const applicantName = document.getElementById('applicant-name')?.value?.trim();
-      const birthYear = document.getElementById('birth-year')?.value;
+/* ---------- Forms and modal handling ---------- */
+function setupForms() {
+  // Terms modal controls (in audition1)
+  const termsModal = document.getElementById('terms-modal');
+  const termsClose = document.getElementById('terms-close');
+  const termsContinue = document.getElementById('terms-continue');
+  const termsAccept = document.getElementById('terms-accept');
 
-      // Basic required check
-      if (!parentName || !parentPhone || !parentEmail || !applicantName || !birthYear) {
-        alert('Please complete all required fields before continuing.');
-        return;
-      }
-
-      // Age check (12-14)
-      const year = parseInt(birthYear, 10);
-      const currentYear = new Date().getFullYear();
-      const age = currentYear - year;
-      if (age < 12 || age > 14) {
-        alert('Applicant must be between 12 and 14 years old.');
-        return;
-      }
-
-      // Save to localStorage so audition2 can pick it up
-      const payload = {
-        parent_name: parentName,
-        parent_phone: parentPhone,
-        parent_email: parentEmail,
-        applicant_name: applicantName,
-        birth_year: birthYear,
-        applicant_email: document.getElementById('applicant-email')?.value?.trim() || ''
-      };
-      localStorage.setItem('newacademy_audition_step1', JSON.stringify(payload));
-      // Open audition2 page in same tab or new tab? User wanted a new tab earlier.
-      window.open('audition2.html', '_blank', 'noopener');
+  if (termsClose) {
+    termsClose.addEventListener('click', () => {
+      if (termsModal) termsModal.setAttribute('aria-hidden', 'true');
     });
   }
 
-  // Populate birth-year select with allowed years (12-14)
-  function populateBirthYears() {
-    const sel = document.getElementById('birth-year');
-    if (!sel) return;
-    sel.innerHTML = '';
-    const currentYear = new Date().getFullYear();
-    // ages 12..14 => years currentYear - 12 .. currentYear - 14
-    const years = [];
-    for (let a = 12; a <= 14; a++) {
-      years.push(currentYear - a);
-    }
-    // sort descending so most recent first
-    years.sort((a,b)=>b-a).forEach(y => {
-      const opt = document.createElement('option');
-      opt.value = String(y);
-      opt.textContent = String(y);
-      sel.appendChild(opt);
+  if (termsContinue) {
+    termsContinue.addEventListener('click', () => {
+      if (!termsAccept.checked) {
+        alert('Please accept the Terms & Service to continue.');
+        return;
+      }
+      if (termsModal) termsModal.setAttribute('aria-hidden', 'true');
+      // allow application to continue (user pressed Next after terms)
+      // Nothing more here — the flow continues when user clicks Next.
     });
   }
-})();
 
-// ----- audition2 page: pick up fields from localStorage and inject hidden inputs -----
-(function carryFieldsAndSubmit() {
-  const carry = document.getElementById('carry-fields');
-  const form2 = document.getElementById('audition2-form');
-  const resultBox = document.getElementById('submission-result');
-
-  if (!form2 || !carry) return;
-
-  // Get step 1 from localStorage
-  const s1 = localStorage.getItem('newacademy_audition_step1');
-  if (!s1) {
-    // If missing, ask user to go back
-    const msg = document.createElement('div');
-    msg.className = 'result-box';
-    msg.innerHTML = '<p>No applicant data found. Please complete Step 1 first.</p><a class="btn" href="audition1.html">Go to Step 1</a>';
-    carry.appendChild(msg);
-    form2.querySelectorAll('input,select,button[type="submit"]').forEach(el => el.disabled = true);
-    return;
-  }
-  const data = JSON.parse(s1);
-  // create hidden inputs
-  for (const key in data) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = data[key];
-    carry.appendChild(input);
-  }
-
-  // After submit, show custom message and prevent default Formspree redirect (we still POST to Formspree)
-  form2.addEventListener('submit', (ev) => {
-    // Allow the form to submit to Formspree normally. For better UX, show message after submit attempt.
-    // We will let it submit; but try to show message and prevent navigation by using fetch if desired.
-    ev.preventDefault();
-
-    const formData = new FormData(form2);
-    // POST via fetch to Formspree endpoint
-    fetch(form2.action, {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    }).then(response => {
-      if (response.ok) {
-        // clear saved data
-        localStorage.removeItem('newacademy_audition_step1');
-        // hide form, show result
-        form2.classList.add('hidden');
-        if (resultBox) resultBox.classList.remove('hidden');
+  // When user clicks Next on Part1: show modal and then if accepted, validate and submit form (via Formspree)
+  const startBtn = document.getElementById('start-audition');
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      if (termsModal) {
+        termsModal.setAttribute('aria-hidden', 'false');
+        // scroll to top of modal
+        document.querySelector('body').style.overflow = 'hidden';
       } else {
-        return response.json().then(data => {
-          throw new Error(data?.error || 'Submission failed. Try again later.');
-        });
+        // No modal found — just proceed
+        handlePart1Submit();
       }
-    }).catch(err => {
-      alert('Submission error: ' + (err.message || err));
-    });
-  });
-})();
 
+      // After modal acceptance, the "terms-continue" button should trigger the submission logic:
+      const cont = document.getElementById('terms-continue');
+      if (cont) {
+        cont.addEventListener('click', () => {
+          // close modal UI
+          if (termsModal) {
+            termsModal.setAttribute('aria-hidden', 'true');
+            document.querySelector('body').style.overflow = '';
+          }
+          handlePart1Submit();
+        }, { once: true });
+      }
+    });
+  }
+
+  // Attach actual Part1 submission (inner function)
+  function handlePart1Submit() {
+    const form = document.getElementById('part1-form');
+    if (!form) return;
+
+    clearErrors(['childName','parentName','childEmail','parentEmail','dob','talent','permission']);
+
+    const childName = document.getElementById('childName').value.trim();
+    const parentName = document.getElementById('parentName').value.trim();
+    const childEmail = document.getElementById('childEmail').value.trim();
+    const parentEmail = document.getElementById('parentEmail').value.trim();
+    const year = document.getElementById('dob-year').value;
+    const month = document.getElementById('dob-month').value;
+    const day = document.getElementById('dob-day').value;
+    const talent = document.getElementById('talent').value;
+    const permission = document.getElementById('permission').checked;
+
+    let hasError = false;
+
+    if (!childName) { showError('childName','Please enter your child\\'s full name.'); hasError = true; }
+    if (!parentName) { showError('parentName','Please enter parent/guardian full name.'); hasError = true; }
+    if (childEmail && !isValidEmail(childEmail)) { showError('childEmail','Please enter a valid child email address.'); hasError = true; }
+    if (!parentEmail || !isValidEmail(parentEmail)) { showError('parentEmail','Please enter a valid parent email (required).'); hasError = true; }
+    if (!year || !month || !day) { showError('dob','Please select a valid date of birth (year, month, day).'); hasError = true; }
+    if (!talent) { showError('talent','Please select a primary talent.'); hasError = true; }
+    if (!permission) { showError('permission','Parental permission is required to continue.'); hasError = true; }
+
+    if (hasError) return;
+
+    // Create application ID
+    const appId = 'NA-' + Date.now();
+
+    // Save locally for prefill
+    const payload = { appId, childName, parentName, childEmail, parentEmail, dob: `${year}-${month}-${day}`, talent, permission: !!permission };
+    localStorage.setItem('na-application', JSON.stringify(payload));
+
+    // Build FormData for Formspree submission (Part1)
+    const fd = new FormData();
+    fd.append('form-name', 'part1-application');
+    fd.append('appId', appId);
+    fd.append('childName', childName);
+    fd.append('parentName', parentName);
+    fd.append('childEmail', childEmail);
+    fd.append('parentEmail', parentEmail);
+    fd.append('dob', `${year}-${month}-${day}`);
+    fd.append('talent', talent);
+
+    // Submit to Formspree
+    fetch(FORMSPREE_ENDPOINT, { method: 'POST', body: fd })
+      .then(r => {
+        // Formspree returns 200-299 on success
+        if (r.ok) {
+          // Redirect to Part2 (open in same tab)
+          window.open('audition2.html', '_self');
+        } else {
+          return r.text().then(t => { throw new Error('Form submission failed'); });
+        }
+      })
+      .catch(err => {
+        alert('Submission failed. Please try again later.'); // generic friendly fallback
+        console.error(err);
+      });
+  }
+
+  // Part2 form handling (video)
+  const p2 = document.getElementById('part2-form');
+  if (p2) {
+    const videoInput = document.getElementById('videoFile');
+    const preview = document.getElementById('preview-player');
+    const previewWrap = document.getElementById('video-preview');
+
+    if (videoInput) {
+      videoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        // client size limit for demo (200MB)
+        if (file.size > 200 * 1024 * 1024) {
+          showFieldError('video','File too large. Please use a smaller file (<200MB) or trim your clip.');
+          videoInput.value = '';
+          return;
+        }
+        // preview
+        const url = URL.createObjectURL(file);
+        if (preview) {
+          preview.src = url;
+          previewWrap.hidden = false;
+        }
+      });
+    }
+
+    p2.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      clearErrors(['appId','video']);
+      const appId = document.getElementById('appId').value.trim();
+      const file = document.getElementById('videoFile').files[0];
+
+      let err = false;
+      if (!appId) { showFieldError('appId','Please provide your Application ID or name.'); err = true; }
+      if (!file) { showFieldError('video','Please choose a video file to upload.'); err = true; }
+      if (err) return;
+
+      const statusEl = document.getElementById('submit-status');
+      statusEl.hidden = false;
+      statusEl.textContent = 'Uploading... please wait';
+
+      const fd = new FormData();
+      fd.append('form-name', 'part2-video');
+      fd.append('appId', appId);
+      fd.append('video', file, file.name);
+
+      fetch(FORMSPREE_ENDPOINT, { method: 'POST', body: fd })
+        .then(res => {
+          if (res.ok) {
+            statusEl.textContent = 'Thanks — your audition was submitted! Please wait 4 to 6 months for a response.';
+            // clear form
+            document.getElementById('part2-form').reset();
+            const previewWrap = document.getElementById('video-preview');
+            if (previewWrap) previewWrap.hidden = true;
+          } else {
+            throw new Error('Upload failed');
+          }
+        })
+        .catch(e => {
+          statusEl.textContent = 'Submission failed — please try again later.';
+          console.error(e);
+        });
+    });
+  }
+}
+
+/* ---------- Utilities ---------- */
+function isValidEmail(em) {
+  // simple regex
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+}
+
+function showError(fieldId, msg) {
+  const el = document.getElementById(`err-${fieldId}`);
+  if (el) {
+    el.textContent = msg;
+    el.classList.add('show');
+  } else {
+    // fallback alert
+    alert(msg);
+  }
+}
+
+function showFieldError(name, msg) {
+  // field-level mapping
+  const idMap = {
+    'video':'video',
+    'appId':'appId',
+  };
+  const key = idMap[name] || name;
+  const el = document.getElementById(`err-${key}`) || document.getElementById(`err-${name}`);
+  if (el) {
+    el.textContent = msg;
+    el.classList.add('show');
+  } else {
+    alert(msg);
+  }
+}
+
+function clearErrors(list) {
+  list.forEach(k => {
+    const el = document.getElementById(`err-${k}`);
+    if (el) {
+      el.textContent = '';
+      el.classList.remove('show');
+    }
+  });
+}
