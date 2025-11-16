@@ -2,91 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>New Academy — Audition Step 1</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Academy — Application Part 1</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="black-bg">
-  <main class="form-main">
-    <header class="small-header">
-      <h1>Audition — Step 1</h1>
-      <p class="muted">Parent/Guardian details then applicant info. (Ages 12–14 only)</p>
-    </header>
+<body>
+  <header class="minimal-header">
+    <img src="logo.png" alt="New Academy logo" class="logo small" onerror="this.style.display='none'">
+    <div class="logo-note">This is not the name of the group</div>
+  </header>
 
-    <!-- Terms modal-like box shown on page load -->
-    <section id="terms" class="terms-box" aria-labelledby="terms-title">
-      <h2 id="terms-title">Please Read — Very Important</h2>
+  <main class="container narrow">
+    <h1>Application — Part 1</h1>
+    <p class="lead">Complete this information. When you press <strong>Next</strong> you'll be asked to accept the Terms & Service before continuing to Part 2 (video).</p>
 
-      <div class="terms-content">
-        <h3>Eligibility & Age</h3>
-        <p>Please only proceed if your applicant is <strong>12 to 14 years old</strong>. Birth year must be selected. We will validate age automatically.</p>
+    <!-- Terms & Service modal (hidden by default) -->
+    <div id="terms-modal" class="modal" aria-hidden="true">
+      <div class="modal-inner">
+        <button class="modal-close" id="terms-close" aria-label="Close terms">✕</button>
+        <h2>Terms & Service — Please read</h2>
+        <div class="modal-content">
+          <p><strong>Important — Read carefully:</strong></p>
+          <ul>
+            <li>New Academy is a Christian-based audition program focused on ministry and spreading the gospel through music. This is not a professional label; progress may be slow and we ask for patience.</li>
+            <li>No strict dieting policies — we will not require unhealthy or extreme diets. Health and safety come first.</li>
+            <li>Ages allowed: <strong>12–14 only</strong>. Parent/guardian permission is required for anyone under 18.</li>
+            <li>Training can be intense. Be prepared for regular, sometimes long, practice sessions.</li>
+            <li>Commitment: training may last multiple years; we expect members (with parental support) to commit to training for a sustained period.</li>
+            <li>We do not encourage joining solely for fame or money. The group’s mission is ministry and sharing faith through performance.</li>
+            <li>Team culture: there is <strong>no single 'leader'</strong>. Members must be respectful, social, and report problems to parents/staff.</li>
+            <li>If you accept, parents must support and communicate with staff as needed.</li>
+          </ul>
+        </div>
+        <div class="modal-actions">
+          <label class="modal-accept">
+            <input type="checkbox" id="terms-accept"> I have read and accept the Terms & Service
+          </label>
+          <button class="btn btn-primary" id="terms-continue">Continue to Application</button>
+        </div>
+      </div>
+    </div>
 
-        <h3>Training & Commitment</h3>
-        <p>Training will include intense weekend sessions. This project expects commitment for <strong>1–2 years</strong> of training, with potential debut timelines of <strong>5–7 years</strong> depending on development. Parents must be comfortable with this schedule.</p>
-
-        <h3>Expectations</h3>
-        <p>There is no enforced strict diet, but there will be consistent, sometimes intense exercise and practice. Popularity at debut is not guaranteed; you may build a following on social media before and during debut.</p>
-
-        <h3>Project Nature</h3>
-        <p>New Academy is a Christian-based group project initiated by a single creator; it is not company-owned. Everyone is treated equally — there is no single leader. This is an independent, faith-centered creative project.</p>
-
-        <h3>Content & Privacy</h3>
-        <p>All submission materials are used for audition review only. Do not submit copyrighted performance content you do not own permission for. Your contact info will not be publicly posted.</p>
-
-        <h3>Agreement</h3>
-        <p>By clicking <strong>"I Agree"</strong> you confirm your agreement to these terms and that your parent/guardian consents to the applicant's participation and potential training.</p>
+    <!-- Application form -->
+    <form id="part1-form" class="form" novalidate>
+      <div class="form-row">
+        <label for="childName">Child's Full Name</label>
+        <input id="childName" name="childName" type="text" placeholder="First Last">
+        <div class="invalid" id="err-childName"></div>
       </div>
 
-      <div class="terms-actions">
-        <label class="checkbox">
-          <input id="agree-checkbox" type="checkbox"> I have read and agree to the Terms.
-        </label>
-        <button id="agree-btn" class="btn disabled" disabled>Continue to Form</button>
+      <div class="form-row">
+        <label for="parentName">Parent / Guardian Full Name</label>
+        <input id="parentName" name="parentName" type="text" placeholder="Parent Name">
+        <div class="invalid" id="err-parentName"></div>
       </div>
-    </section>
 
-    <!-- The actual form (hidden until user agrees) -->
-    <form id="audition1-form" class="audition-form hidden" novalidate>
-      <fieldset>
-        <legend>Parent / Guardian Information</legend>
-        <label>Parent / Guardian Name
-          <input id="parent-name" name="parent_name" type="text" required>
-        </label>
+      <div class="form-row">
+        <label for="childEmail">Child Email</label>
+        <input id="childEmail" name="childEmail" type="email" placeholder="child@example.com">
+        <div class="invalid" id="err-childEmail"></div>
+      </div>
 
-        <label>Parent / Guardian Phone
-          <input id="parent-phone" name="parent_phone" type="tel" pattern="[0-9+\-\s()]*" placeholder="e.g. +1 555 555 5555" required>
-        </label>
+      <div class="form-row">
+        <label for="parentEmail">Parent Email</label>
+        <input id="parentEmail" name="parentEmail" type="email" placeholder="parent@example.com" required>
+        <div class="invalid" id="err-parentEmail"></div>
+      </div>
 
-        <label>Parent / Guardian Email
-          <input id="parent-email" name="parent_email" type="email" required>
-        </label>
-      </fieldset>
+      <div class="form-row dob-row">
+        <label>Date of Birth</label>
+        <div class="dob-selects">
+          <select id="dob-year" name="dob-year" aria-label="Year"></select>
+          <select id="dob-month" name="dob-month" aria-label="Month"></select>
+          <select id="dob-day" name="dob-day" aria-label="Day"></select>
+        </div>
+        <div class="invalid" id="err-dob"></div>
+      </div>
 
-      <fieldset>
-        <legend>Applicant Information</legend>
-        <label>Applicant Full Name
-          <input id="applicant-name" name="applicant_name" type="text" required>
-        </label>
+      <div class="form-row">
+        <label for="talent">Primary Talent</label>
+        <select id="talent" name="talent">
+          <option value="">Choose</option>
+          <option>Singing</option>
+          <option>Dance</option>
+          <option>Rap</option>
+          <option>Instrument</option>
+          <option>Other</option>
+        </select>
+        <div class="invalid" id="err-talent"></div>
+      </div>
 
-        <label>Birth Year
-          <select id="birth-year" name="birth_year" required>
-            <!-- options generated by script -->
-          </select>
-        </label>
-
-        <label>Applicant Email (optional)
-          <input id="applicant-email" name="applicant_email" type="email">
-        </label>
-      </fieldset>
+      <label class="checkbox">
+        <input id="permission" type="checkbox" name="permission"> I have parental permission to audition
+      </label>
+      <div class="invalid" id="err-permission"></div>
 
       <div class="form-actions">
-        <button type="button" id="to-step2" class="btn">Next — What are you auditioning for?</button>
-        <a href="index.html" class="btn ghost">Cancel</a>
+        <button type="button" class="btn btn-primary" id="start-audition">Next</button>
+        <a href="index.html" class="btn btn-outline">Cancel</a>
       </div>
+
     </form>
   </main>
+
+  <footer class="site-footer">New Academy • Parental permission required</footer>
 
   <script src="script.js"></script>
 </body>
 </html>
-
