@@ -2,80 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>New Academy — Auditions</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="black-bg">
-  <!-- Intro / writing animation overlay -->
-  <div id="intro" class="intro">
-    <!-- PNG logo sits beneath, centered -->
-    <img id="logo-png" src="New.png" alt="New Academy logo" class="logo-png" />
-    <!-- SVG handwriting overlay (white stroke) -->
-    <svg id="logo-svg" class="logo-svg" viewBox="0 0 900 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <!-- Text path: uses a script-like font look-alike. This path will animate stroke-draw -->
-      <defs>
-        <style>
-          .hand { fill:none; stroke:#fff; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
-        </style>
-      </defs>
-      <!-- You can change the <text> to better match; this will animate like writing -->
-      <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" style="font-family: 'Great Vibes', cursive; font-size:78px; fill:none; stroke:#fff; stroke-width:2.5;" class="hand">New Academy</text>
-    </svg>
+<body>
+  <!-- Intro overlay animation -->
+  <div id="intro-overlay" class="intro-overlay" aria-hidden="false">
+    <div class="intro-center">
+      <div id="intro-text" class="intro-text">
+        <span class="intro-new">New</span>
+        <span class="intro-academy">ACADEMY</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Main homepage -->
-  <main id="main" class="main hidden">
-    <header class="site-header">
-      <h1 class="brand">New Academy</h1>
-      <p class="tag">A new beginning in faith & music</p>
-    </header>
+  <header class="site-header">
+    <div class="header-left">
+      <!-- Put your logo file in the site root and name it logo.png -->
+      <img src="logo.png" alt="New Academy logo" class="logo" onerror="this.style.display='none'">
+      <div class="logo-text">
+        <div class="logo-small">New Academy</div>
+        <div class="logo-note">This is not the name of the group</div>
+      </div>
+    </div>
 
-    <section class="cta">
-      <a class="btn audition-btn" id="audition-open" href="audition1.html" target="_blank" rel="noopener">Audition Here</a>
-    </section>
+    <nav class="header-right">
+      <button class="btn btn-primary" id="audition-open" title="Open audition form in new tab">Audition</button>
+    </nav>
+  </header>
 
-    <section class="roles" aria-labelledby="roles-heading">
-      <h2 id="roles-heading" class="section-title">Roles & What They Do</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>Main Vocalist</h3>
-          <p>Primary singer and lead vocal. Strong control, high range, emotional delivery.</p>
-          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
-        </article>
-
-        <article class="card">
-          <h3>Main Dancer</h3>
-          <p>Lead dancer who takes complex choreography and performance-focused sections.</p>
-          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
-        </article>
-
-        <article class="card">
-          <h3>Main Rapper</h3>
-          <p>Primary rapper: rhythm, flow, stage presence, and rap performance skills.</p>
-          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
-        </article>
-
-        <article class="card">
-          <h3>Main Visualizer</h3>
-          <p>Focus on visuals, camera presence, and performance aesthetic for media.</p>
-          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
-        </article>
-
-        <article class="card">
-          <h3>All-Rounder</h3>
-          <p>Versatile member who performs multiple roles — sings, dances, raps as needed.</p>
-          <a href="audition1.html" target="_blank" class="card-btn">Audition</a>
-        </article>
+  <main class="container">
+    <section class="hero-card">
+      <h1 class="hero-title">Join New Academy</h1>
+      <p class="hero-sub">Open auditions for boys <strong>ages 12–14</strong>. Parental permission required.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="audition1.html" target="_blank" id="audition-link">Apply — Part 1</a>
+        <a class="btn btn-outline" href="audition2.html" target="_blank">Part 2 — Video</a>
       </div>
     </section>
 
-    <footer class="site-footer">
-      <p>© 2025 New Academy — A solo-run project growing toward a global stage</p>
-    </footer>
+    <section class="roles-grid">
+      <h2>Roles we train for</h2>
+      <div class="grid">
+        <button class="role-card" data-role="Main Dancer">
+          <h3>Main Dancer</h3>
+          <p>Leads choreography, strong performance & stage presence, fast learning for complex moves.</p>
+        </button>
+
+        <button class="role-card" data-role="Main Vocalist">
+          <h3>Main Vocalist</h3>
+          <p>Powerful singing, consistent pitch, leads important vocal lines and harmonies.</p>
+        </button>
+
+        <button class="role-card" data-role="Main Visualizer">
+          <h3>Main Visualizer</h3>
+          <p>Face of the group for visuals, photoshoots, styling; strong camera presence.</p>
+        </button>
+
+        <button class="role-card" data-role="All-Rounder">
+          <h3>All-Rounder</h3>
+          <p>Versatile in dance and vocals, can cover multiple parts and adapt to needs.</p>
+        </button>
+
+        <button class="role-card" data-role="Main Rapper">
+          <h3>Main Rapper</h3>
+          <p>Leads rap lines and rhythm sections; strong flow, timing and stage energy.</p>
+        </button>
+      </div>
+      <div id="role-detail" class="role-detail" hidden></div>
+    </section>
+
+    <section class="info-card">
+      <h2>Quick Info</h2>
+      <ul>
+        <li>Age: <strong>12–14</strong></li>
+        <li>We are a Christian-based training program. This is not a professional label; progress may be slow.</li>
+        <li>Expect intense practice and a multi-year commitment (training could last 1–5 years).</li>
+        <li>No leader model — team-first. Be kind and speak up if something's wrong.</li>
+        <li>Not for money/fame — aim is to share the gospel through music.</li>
+      </ul>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <small>New Academy • Auditions for ages 12–14 • Parental permission required</small>
+  </footer>
 
   <script src="script.js"></script>
 </body>
 </html>
-
